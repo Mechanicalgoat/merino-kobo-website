@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>メリノ工房 - 作品一覧</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .works-header {
+            padding-top: 120px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .works-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .works-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 20px 0 80px 0;
+        }
+        
+        .work-item {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .work-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .work-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .work-content {
+            padding: 20px;
+        }
+        
+        .work-content h3 {
+            margin-bottom: 10px;
+            font-size: 1.4rem;
+        }
+        
+        .work-content p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .work-content .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .work-content .tag {
+            background: #f0f0f0;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #555;
+        }
+        
+        .work-content .link-button {
+            display: inline-block;
+            padding: 8px 20px;
+            background: #ADD3FF;
+            color: #333;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+        
+        .work-content .link-button:hover {
+            background: #8bbcff;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>メリノ工房</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="privacy-policy.html">プライバシーポリシー</a></li>
+                    <li><a href="#contact">お問い合わせ</a></li>
+                    <li><a href="works.html" class="active">作品一覧</a></li>
+                    <li><a href="index.html">HOME</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="works-header">
+        <div class="container">
+            <h2>作品一覧</h2>
+            <p>メリノ工房が手がけた作品やプロジェクトをご紹介します</p>
+        </div>
+    </section>
+
+    <section class="works">
+        <div class="container">
+            <div class="works-grid">
+                <div class="work-item">
+                    <img src="img/website.jpg" alt="メリノ工房ウェブサイト">
+                    <div class="work-content">
+                        <h3>メリノ工房ウェブサイト</h3>
+                        <p>モダンでシンプルなポートフォリオサイト</p>
+                        <div class="tags">
+                            <span class="tag">HTML/CSS</span>
+                            <span class="tag">JavaScript</span>
+                            <span class="tag">レスポンシブデザイン</span>
+                        </div>
+                        <a href="#" class="link-button">詳細を見る</a>
+                    </div>
+                </div>
+                
+                <div class="work-item">
+                    <img src="img/note.jpg" alt="note記事">
+                    <div class="work-content">
+                        <h3>note記事</h3>
+                        <p>プログラミングやデザインに関する記事を公開中</p>
+                        <div class="tags">
+                            <span class="tag">Web開発</span>
+                            <span class="tag">デザイン</span>
+                            <span class="tag">プログラミング</span>
+                        </div>
+                        <a href="#" class="link-button">記事を読む</a>
+                    </div>
+                </div>
+                
+                <div class="work-item">
+                    <img src="img/illustrations.jpg" alt="イラスト作品集">
+                    <div class="work-content">
+                        <h3>イラスト作品集</h3>
+                        <p>ぴにおんによるイラストレーション</p>
+                        <div class="tags">
+                            <span class="tag">イラスト</span>
+                            <span class="tag">アート</span>
+                            <span class="tag">デザイン</span>
+                        </div>
+                        <a href="#" class="link-button">ギャラリーを見る</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 メリノ工房. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
