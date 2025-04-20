@@ -39,8 +39,8 @@ document.addEventListener('DOMContentLoaded', function() {
     style.textContent = `
         .service-item, .team-member {
             opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.6s ease, transform 0.6s ease;
+            transform: translateY(20px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
         }
         
         .service-item.animate, .team-member.animate {
