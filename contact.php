@@ -128,7 +128,7 @@
             <nav>
                 <ul>
                     <li><a href="privacy-policy.html">プライバシーポリシー</a></li>
-                    <li><a href="contact.html" class="active">お問い合わせ</a></li>
+                    <li><a href="contact.php" class="active">お問い合わせ</a></li>
                     <li><a href="works.html">作品一覧</a></li>
                     <li><a href="index.html">HOME</a></li>
                 </ul>
@@ -145,11 +145,51 @@
 
     <section class="contact">
         <div class="container">
-            <div class="success-message" id="success-message">
-                メッセージを送信しました。ありがとうございます。
-            </div>
+            <?php
+            if (isset($_POST['submit'])) {
+                // ボット対策のチェック
+                $honeypot = $_POST['honeypot'];
+                $submit_time = $_POST['submit_time'];
+                $time_elapsed = time() - intval($submit_time);
+                $captcha_answer = $_POST['captcha-answer'];
+                $captcha_expected = $_POST['captcha-expected'];
+                
+                if ($honeypot !== '' || $time_elapsed < 3) {
+                    // ボット検出、ただし成功メッセージを表示（ボットに気づかれないため）
+                    echo '<div class="success-message" style="display: block;">メッセージを送信しました。ありがとうございます。</div>';
+                } else if ($captcha_answer !== $captcha_expected) {
+                    // キャプチャ不一致
+                    echo '<div class="error-message" style="display: block; margin-bottom: 20px;">キャプチャの回答が正しくありません。もう一度お試しください。</div>';
+                } else {
+                    // 入力内容の取得とサニタイズ
+                    $name = htmlspecialchars($_POST['name']);
+                    $email = htmlspecialchars($_POST['email']);
+                    $subject = htmlspecialchars($_POST['subject']);
+                    $inquiry_type = htmlspecialchars($_POST['inquiry-type']);
+                    $message = htmlspecialchars($_POST['message']);
+                    
+                    // メールヘッダー
+                    $to = "tomato.co.jp.blog@gmail.com";
+                    $email_subject = "[メリノ工房] " . $subject;
+                    $email_body = "名前: " . $name . "\n";
+                    $email_body .= "メールアドレス: " . $email . "\n";
+                    $email_body .= "問い合わせ種類: " . $inquiry_type . "\n\n";
+                    $email_body .= "メッセージ内容:\n" . $message . "\n";
+                    
+                    $headers = "From: " . $email . "\r\n";
+                    $headers .= "Reply-To: " . $email . "\r\n";
+                    
+                    // メール送信
+                    if (mail($to, $email_subject, $email_body, $headers)) {
+                        echo '<div class="success-message" style="display: block;">メッセージを送信しました。ありがとうございます。</div>';
+                    } else {
+                        echo '<div class="error-message" style="display: block; margin-bottom: 20px;">メッセージの送信に失敗しました。後ほど再度お試しいただくか、直接メールでお問い合わせください。</div>';
+                    }
+                }
+            }
+            ?>
             
-            <form class="contact-form" id="contact-form">
+            <form class="contact-form" id="contact-form" method="POST" action="">
                 <div class="form-group">
                     <label for="name">お名前 <span style="color: #e74c3c;">*</span></label>
                     <input type="text" id="name" name="name" required>
@@ -186,15 +226,22 @@
                 
                 <div class="human-check">
                     <label>人間確認:</label>
-                    <span id="captcha-question">2 + 3 = ?</span>
+                    <span id="captcha-question">
+                        <?php 
+                        $num1 = rand(0, 9);
+                        $num2 = rand(0, 9);
+                        $result = $num1 + $num2;
+                        echo $num1 . " + " . $num2 . " = ?";
+                        ?>
+                    </span>
                     <input type="text" id="captcha-answer" name="captcha-answer" required>
                     <div class="error-message" id="captcha-error">正しい答えを入力してください</div>
-                    <input type="hidden" id="captcha-expected" value="5">
+                    <input type="hidden" id="captcha-expected" name="captcha-expected" value="<?php echo $result; ?>">
                     <input type="hidden" id="honeypot" name="honeypot">
-                    <input type="hidden" id="submit-time" name="submit-time">
+                    <input type="hidden" id="submit-time" name="submit-time" value="<?php echo time(); ?>">
                 </div>
                 
-                <button type="submit" class="submit-btn">送信する</button>
+                <button type="submit" name="submit" class="submit-btn">送信する</button>
             </form>
         </div>
     </section>
@@ -213,20 +260,6 @@
         const subjectInput = document.getElementById('subject');
         const messageInput = document.getElementById('message');
         const captchaInput = document.getElementById('captcha-answer');
-        const captchaExpected = document.getElementById('captcha-expected');
-        const honeypotInput = document.getElementById('honeypot');
-        const submitTimeInput = document.getElementById('submit-time');
-        const successMessage = document.getElementById('success-message');
-        
-        // Generate random math question for captcha
-        function generateCaptcha() {
-            const num1 = Math.floor(Math.random() * 10);
-            const num2 = Math.floor(Math.random() * 10);
-            const result = num1 + num2;
-            
-            document.getElementById('captcha-question').textContent = `${num1} + ${num2} = ?`;
-            captchaExpected.value = result;
-        }
         
         // Validate form
         function validateForm() {
@@ -265,31 +298,11 @@
                 document.getElementById('message-error').style.display = 'none';
             }
             
-            // Captcha validation
-            if (captchaInput.value.trim() !== captchaExpected.value) {
-                document.getElementById('captcha-error').style.display = 'block';
-                isValid = false;
-            } else {
-                document.getElementById('captcha-error').style.display = 'none';
-            }
-            
             return isValid;
-        }
-        
-        // Set up form submission timing check (anti-bot)
-        function setupFormTiming() {
-            const timestamp = Date.now();
-            submitTimeInput.value = timestamp;
         }
         
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
-            // Generate captcha
-            generateCaptcha();
-            
-            // Setup form timing
-            setupFormTiming();
-            
             // Mobile navigation toggle (from scripts.js)
             const mobileToggle = document.createElement('div');
             mobileToggle.className = 'mobile-toggle';
@@ -304,66 +317,11 @@
                     '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
             });
             
-            // Form submission
+            // Form validation before submission
             form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                // Validate form
                 if (!validateForm()) {
-                    return;
+                    e.preventDefault();
                 }
-                
-                // Check if honeypot is filled (bot detection)
-                if (honeypotInput.value !== '') {
-                    return;
-                }
-                
-                // Check submission timing (too fast is likely a bot)
-                const submissionTime = Date.now();
-                const timeElapsed = submissionTime - submitTimeInput.value;
-                if (timeElapsed < 3000) { // Less than 3 seconds
-                    // Likely a bot, but still show success to avoid tipping them off
-                    successMessage.style.display = 'block';
-                    form.reset();
-                    generateCaptcha();
-                    setupFormTiming();
-                    return;
-                }
-                
-                // Create form data
-                const formData = new FormData(form);
-                
-                // Send email using mailto
-                const subject = encodeURIComponent(formData.get('subject'));
-                const body = encodeURIComponent(
-                    `名前: ${formData.get('name')}\n` +
-                    `メール: ${formData.get('email')}\n` +
-                    `問い合わせ種類: ${formData.get('inquiry-type')}\n\n` +
-                    `${formData.get('message')}`
-                );
-                
-                // Create temporary link for mailto
-                const mailtoLink = document.createElement('a');
-                mailtoLink.href = `mailto:tomato.co.jp.blog@gmail.com?subject=${subject}&body=${body}`;
-                mailtoLink.style.display = 'none';
-                document.body.appendChild(mailtoLink);
-                
-                // Click the link
-                mailtoLink.click();
-                
-                // Remove the link
-                document.body.removeChild(mailtoLink);
-                
-                // Show success message
-                successMessage.style.display = 'block';
-                
-                // Reset form
-                form.reset();
-                generateCaptcha();
-                setupFormTiming();
-                
-                // Scroll to the top of the form
-                successMessage.scrollIntoView({ behavior: 'smooth' });
             });
         });
     </script>
